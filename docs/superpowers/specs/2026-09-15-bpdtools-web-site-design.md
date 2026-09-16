@@ -225,11 +225,31 @@ The app takes this seriously and the site matches it.
 ## Deployment
 
 Pages source is **GitHub Actions**, not branch-deploy, because the site is
-built. `.github/workflows/deploy.yml` uses `withastro/action` followed by
-`actions/deploy-pages`, triggered on push to `main` plus `workflow_dispatch`.
+built. Nothing is committed from `dist/`; the artifact is produced in CI.
+
+`.github/workflows/deploy.yml`, triggered on push to `main` plus
+`workflow_dispatch`:
+
+- Two jobs, `build` then `deploy`, so a failing build never replaces a
+  working site.
+- `build`: `actions/checkout`, then `withastro/action` (which handles Node
+  setup, dependency install with the lockfile, `astro build`, and uploading
+  the Pages artifact).
+- `deploy`: `actions/deploy-pages`, with `environment: github-pages`.
+- Top-level `permissions:` of `contents: read`, `pages: write`,
+  `id-token: write` — Pages deployment uses OIDC and fails without the last
+  two. This is the most common way this workflow breaks.
+- `concurrency:` group `pages` with `cancel-in-progress: false`, so two
+  pushes in quick succession queue rather than racing to publish.
+
+All actions pinned to major version tags.
+
+Repository setting: Settings → Pages → Source must be set to **GitHub
+Actions**. This is a one-time manual step and the workflow cannot do it
+itself.
 
 `public/CNAME` contains `bpdtools.cloud` so the custom domain survives every
-deploy.
+deploy — without it, Pages drops the custom domain on publish.
 
 ### DNS
 
@@ -238,21 +258,30 @@ API's Terraform only reads it via `data "aws_route53_zone"` while creating
 the `api` record, so apex records added by hand do not collide with that
 state.
 
-Records on the apex `bpdtools.cloud`:
+**Status as of 2026-09-15: the apex A records are live.** All four resolve and
+match GitHub's published set:
 
-- A → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-- AAAA → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+- A on `bpdtools.cloud` → `185.199.108.153`, `185.199.109.153`,
+  `185.199.110.153`, `185.199.111.153` — **done, verified by `dig`**
 
-And `www.bpdtools.cloud` CNAME → `erinlkolp.github.io`.
+Still open, neither blocking launch:
 
-These addresses must be re-checked against GitHub's current published set at
-the time they are applied; GitHub has changed them before.
+- AAAA on `bpdtools.cloud` → `2606:50c0:8000::153`, `2606:50c0:8001::153`,
+  `2606:50c0:8002::153`, `2606:50c0:8003::153` — **not set.** Without these
+  the site is unreachable from IPv6-only clients.
+- `www.bpdtools.cloud` CNAME → `erinlkolp.github.io` — **not set.** Only
+  affects visitors who type the `www.` prefix.
 
-Order matters: create the records, wait for them to resolve, set the custom
-domain in Pages, and only then enable Enforce HTTPS. Enabling it before the
-certificate is issued fails and needs a manual retry.
+Addresses must be re-checked against GitHub's current published set before
+being applied; GitHub has changed them before. The four above were checked on
+2026-09-15.
 
-`api.bpdtools.cloud` is untouched. Nothing here changes the API.
+Order matters for what remains: with the records resolving, set the custom
+domain in Pages, then enable Enforce HTTPS only once the certificate has been
+issued. Enabling it too early fails and needs a manual retry.
+
+`api.bpdtools.cloud` still resolves to `35.81.34.11` and is untouched.
+Nothing here changes the API.
 
 ## Verification
 
