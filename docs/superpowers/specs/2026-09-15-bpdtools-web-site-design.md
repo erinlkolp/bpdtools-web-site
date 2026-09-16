@@ -245,9 +245,14 @@ built. Nothing is committed from `dist/`; the artifact is produced in CI.
 
 - Two jobs, `build` then `deploy`, so a failing build never replaces a
   working site.
-- `build`: `actions/checkout`, then `withastro/action` (which handles Node
-  setup, dependency install with the lockfile, `astro build`, and uploading
-  the Pages artifact).
+- `build`: `actions/checkout`, then `actions/setup-node` (with `cache: npm`),
+  `npm ci`, an explicit `npm run verify`, and `actions/upload-pages-artifact`.
+  This replaces the `withastro/action` originally planned here: that action
+  only runs `astro build` and would have uploaded the Pages artifact without
+  ever running `check:contrast` or `check:build`, silently bypassing both
+  gates this same spec's Verification section requires. Composing the steps
+  explicitly keeps `npm run verify` — contrast check, build, output check —
+  on the only path that can publish.
 - `deploy`: `actions/deploy-pages`, with `environment: github-pages`.
 - Top-level `permissions:` of `contents: read`, `pages: write`,
   `id-token: write` — Pages deployment uses OIDC and fails without the last
