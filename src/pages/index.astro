@@ -1,18 +1,10 @@
 ---
+import Base from '../layouts/Base.astro';
 const title = 'bpdtools — a private app for logging emotions';
 const description =
   'A private, offline Android app for logging emotions as they happen. A logging tool, not treatment.';
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-  </head>
-  <body>
-    <h1>bpdtools</h1>
-    <p>{description}</p>
-  </body>
-</html>
+<Base title={title} description={description}>
+  <h1>bpdtools</h1>
+  <p>{description}</p>
+</Base>

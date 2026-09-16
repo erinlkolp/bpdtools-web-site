@@ -85,3 +85,11 @@ a { color: var(--primary); }
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
+
+.site-footer {
+  margin-top: 4rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--outline);
+  color: var(--on-surface-variant);
+  font-size: 0.9375rem;
+}
