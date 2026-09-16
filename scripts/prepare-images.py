@@ -6,6 +6,31 @@ tagline off at the blank band found at y=489..495, keys the white to
 transparent with a feathered edge so the mark does not fringe on dark
 backgrounds, and derives a favicon and an OG card.
 
+Keying window: fix round 1 tightened key_white's lo/hi from 228/250 to
+190/210. At 228/250 the canvas white was removed but the artwork's own
+pale rounded-rectangle panel behind the head (its true min-channel sits
+~205..225, overlapping that window's low end) survived as an opaque
+near-white shape -- invisible on the light page background but a loud
+blotch on the dark-mode token (measured: 18.92% of the logo's opaque
+pixels compose to a near-white min-channel >200 over dark, i.e. the
+panel, not edge anti-aliasing). The real content (heart, brain, cloud,
+wordmark) sits at min-channel ~55..190, comfortably below 190, so tight-
+ening the window to 190/210 drops the panel to ~0% measured residual
+(full-pixel scan, not sampled) on both logo.png and favicon.png, with no
+visible loss to the artwork itself. See task-3-report.md ("Fix round 1")
+for the verification script that gates this and the threshold it derives
+from these measured numbers.
+
+The on-page hero only ever renders the logo at up to 320 CSS px (see
+`width: min(20rem, 80%)` in the hero rule), so public/logo.png is saved
+at DISPLAY_W (~700px, i.e. ~2x that ceiling for HiDPI) rather than the
+source's native 1024px -- full pixel-for-pixel keying still happens at
+native resolution first, only the final saved logo.png is downsized, to
+avoid baking resize error into the alpha feathering. Palette quantization
+was evaluated for logo.png and og-card.png to shrink them further, but
+produces visible banding in the heart's gradient at 256 colors on this
+artwork, so it was rejected in favour of a plain (but resized) RGBA save.
+
 Run:  python3 scripts/prepare-images.py
 """
 from PIL import Image
@@ -13,13 +38,19 @@ from PIL import Image
 SRC = "public/logo-original.png"
 CROP_H = 492          # blank band at y=489..495 separates wordmark from tagline
 LIGHT_BG = (251, 247, 244)   # --background, for the OG card
+DISPLAY_W = 680        # ~2x the hero's 320px CSS ceiling; keeps logo.png well under 120KB
 
-def key_white(img, lo=228, hi=250):
+def key_white(img, lo=190, hi=210):
     """Make near-white transparent, feathering between lo and hi.
 
     Fully transparent at or above hi, fully opaque at or below lo, linear
     in between. Feathering matters: a hard threshold leaves a white fringe
     on anti-aliased glyph edges, which is glaring in dark mode.
+
+    lo/hi were tightened from 228/250 (see module docstring): that wider
+    window left the artwork's own pale panel behind the head opaque and
+    near-white. 190/210 keys the panel out while staying well clear of
+    the real artwork's darkest min-channel values (~55..190).
     """
     img = img.convert("RGBA")
     px = img.load()
@@ -39,9 +70,17 @@ def main():
     src = Image.open(SRC).convert("RGBA")
     w, _ = src.size
 
+    # Keyed at native resolution -- favicon and OG card are both derived
+    # from this full-size version so their crops/fractions stay accurate.
     logo = key_white(src.crop((0, 0, w, CROP_H)))
-    logo.save("public/logo.png", optimize=True)
-    print(f"public/logo.png {logo.size}")
+
+    # public/logo.png: the display copy, downsized for the hero image.
+    # Premultiplied (RGBa) resize avoids reintroducing a white fringe at
+    # the alpha edges, which a naive unpremultiplied resize risks.
+    display_h = round(logo.height * DISPLAY_W / logo.width)
+    logo_display = logo.convert("RGBa").resize((DISPLAY_W, display_h), Image.LANCZOS).convert("RGBA")
+    logo_display.save("public/logo.png", optimize=True)
+    print(f"public/logo.png {logo_display.size}")
 
     # Favicon: the mark alone. The wordmark is illegible at 32px, and the
     # mark occupies roughly the middle 40% of the width above the wordmark.
@@ -52,7 +91,10 @@ def main():
     square.resize((180, 180), Image.LANCZOS).save("public/favicon.png", optimize=True)
     print("public/favicon.png (180x180)")
 
-    # OG card: the logo centred on the light background token.
+    # OG card: the logo centred on the light background token. Kept at
+    # native pre-resize resolution before the thumbnail fit -- 1200x630
+    # is a fixed convention for social-preview cards, not a hero-image
+    # budget, so it is not downsized further.
     card = Image.new("RGBA", (1200, 630), LIGHT_BG + (255,))
     scaled = logo.copy()
     scaled.thumbnail((900, 460), Image.LANCZOS)
