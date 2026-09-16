@@ -34,8 +34,10 @@ copyright line and nothing else.
 
 ## Build
 
-Astro 5, static output, zero client JavaScript. Node 24.14.1 / npm 11.11.0
-are present locally.
+Astro 7 (7.3.2 at time of writing), static output, zero client JavaScript.
+Node 24.14.1 / npm 11.11.0 are present locally. Image processing uses Pillow
+10.2.0 via Python, already installed; ImageMagick is not available on this
+machine.
 
 Astro over hand-written HTML because the three phone mockups are one
 structure with three sets of content — a component with props keeps them in
@@ -200,9 +202,20 @@ Dark mode via `prefers-color-scheme`, no toggle.
 
 Existing foreground/background *pairings* from the app are reused rather than
 recombined, because `ColorContrastTest` already proves those ratios. Any pair
-the app does not already use is checked numerically against WCAG AA (4.5:1
-body, 3:1 large text) before it ships. A failing ratio means the colour is
-wrong, never that the threshold is wrong — the same rule the app holds.
+the app does not already use is checked numerically against WCAG AA before it
+ships. The site adopts the app's own two floors verbatim: **4.5:1 for body
+text, 3:1 for large text and non-text graphics** — the `bodyTextFloor` and
+`graphicalFloor` constants in `ColorContrastTest`.
+
+**Secondary is an accent colour, never body copy.** Terracotta `#A6674F`
+measures 4.22:1 on the light background and 4.49:1 on light surface — below
+the body floor, comfortably above the graphical one. Dark-mode
+`#D9A088` is unconstrained at 8.00:1. This matches the app, whose contrast
+test holds `Secondary` to no body-text assertion. The site therefore uses
+secondary only for rules, icons, and large headings, and the contrast check
+enforces that by testing it against the 3:1 floor alone. A failing ratio
+means the colour is wrong, or the role is wrong — never that the threshold is
+wrong.
 
 System font stack; no webfont, so no third-party request and nothing to block
 render.
