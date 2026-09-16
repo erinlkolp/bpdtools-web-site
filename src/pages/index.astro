@@ -20,7 +20,7 @@ const privacy = [
     p: `Earlier versions declared no internet permission at all, so Android
         itself would refuse to open a socket even if a bug tried. That
         guarantee is gone. What replaces it is weaker: one compiled-in
-        destination, cleartext traffic disabled, and a switch that is off
+        destination (api.bpdtools.cloud), cleartext traffic disabled, and a switch that is off
         until you turn it on. That is policy enforced by this app's code,
         where before it was enforced by Android regardless of this app's
         code. It is worth knowing which of those you have.`,
@@ -68,9 +68,9 @@ const privacy = [
   },
   {
     h: "Android's cloud backup is disabled",
-    p: `An explicit rules file excludes the database, the preferences, and
-        every other file domain. The only upload is the one you switch on, to
-        one address you can name.`,
+    p: `The app declares backup off, and an explicit rules file excludes the
+        database, the preferences, and every other file domain. The only
+        upload is the one you switch on, to one address you can name.`,
   },
   {
     h: 'Device-to-device transfer is deliberately left on',
