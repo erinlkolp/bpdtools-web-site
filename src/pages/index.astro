@@ -54,6 +54,13 @@ const privacy = [
         from the server is done on the server.`,
   },
   {
+    h: 'Deleting an entry does not unsend it',
+    p: `Once an entry has synced, deleting it on the phone does not remove its
+        text from the server. The row is kept there as a tombstone with its
+        content intact, so that a restore is faithful. Clearing the app's
+        storage does not reach it.`,
+  },
+  {
     h: 'No account, no login, no telemetry, no analytics',
     p: `Nothing about your usage is collected or reported. The one credential
         is a token you paste in yourself.`,
@@ -70,6 +77,13 @@ const privacy = [
         touching a server. Your sync token does not come across — it is
         wrapped with a key held in the Android Keystore, and those keys do not
         transfer. You paste it again on the new phone.`,
+  },
+  {
+    h: 'Deleting your data',
+    p: `Deleting an entry hides it from the app — it stops appearing anywhere
+        in the interface. The row itself is kept as a tombstone so that sync
+        can report the deletion. To remove the data from the phone, clear
+        bpdtools's storage in Android Settings, or uninstall the app.`,
   },
 ];
 ---
