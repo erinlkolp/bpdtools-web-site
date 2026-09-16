@@ -16,14 +16,16 @@ if (existsSync(indexPath)) {
   check('does not claim open source', !/open[\s-]?source/i.test(html));
   check('no crisis hotline number', !/\b988\b|suicide|crisis line/i.test(html));
   check('single h1', (html.match(/<h1[\s>]/gi) || []).length === 1);
-  check('has the not-treatment framing', /not treatment/i.test(html));
+  check('not-treatment framing is in the visible copy',
+    /class="hero-claim"[^>]*>[^<]*not treatment/i.test(html));
   check('discloses server-side readability',
-    /not end-to-end|readable/i.test(html));
+    /not end-to-end/i.test(html) && /entries on the server are readable/i.test(html));
   check('states it is not distributed yet', /not .{0,30}available|not .{0,30}distributed/i.test(html));
   check('no contact email', !/mailto:/i.test(html));
+  const phoneCount = (html.match(/class="phone"/g) || []).length;
   check('mockup frames are hidden from assistive tech',
-    (html.match(/class="phone"/g) || []).length ===
-    (html.match(/aria-hidden="true"/g) || []).length);
+    phoneCount > 0 &&
+    phoneCount === (html.match(/aria-hidden="true"/g) || []).length);
   check('three mockups present', (html.match(/class="mockup"/g) || []).length === 3);
 }
 
