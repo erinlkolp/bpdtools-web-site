@@ -1,0 +1,15 @@
+---
+interface Props {
+  /** Text equivalent, for anyone who cannot see the frame. */
+  label: string;
+}
+const { label } = Astro.props;
+---
+<figure class="mockup">
+  <div class="phone" aria-hidden="true">
+    <div class="phone-screen">
+      <slot />
+    </div>
+  </div>
+  <figcaption class="visually-hidden">{label}</figcaption>
+</figure>
