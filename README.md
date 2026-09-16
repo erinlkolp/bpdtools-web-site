@@ -51,8 +51,11 @@ colour combination to the site, add it to `PAIRS`.
 ## Images
 
 `scripts/prepare-images.py` derives everything under `public/` from
-`public/logo-original.png`, which is the supplied file and should stay
-untouched. Re-run it with `python3 scripts/prepare-images.py` (needs Pillow).
+`art/logo-original.png`, which is the supplied file and should stay
+untouched. `art/` sits outside `public/` deliberately — Astro copies
+`public/` verbatim into `dist/`, and the original's baked-in tagline
+("Open Source Tools for BPD Management") must never be served. Re-run it
+with `python3 scripts/prepare-images.py` (needs Pillow).
 
 It crops the original (1024×559) at y=492 to remove a baked-in tagline reading
 "Open Source Tools for BPD Management" — the repos are private, so the first
@@ -80,12 +83,13 @@ white fringe; `favicon.png` (180×180, the mark alone, used at 32px where the
 wordmark is illegible); and `og-card.png` (1200×630, the logo centred on the
 light background token for social-media preview cards).
 
-**Note on asset regeneration.** The pale-pixel verification script that
-validates these thresholds lives in the task 3 report as a standalone Python
-script and is not wired into `npm run verify`. Regenerating assets with
-`python3 scripts/prepare-images.py` does not automatically re-run the check.
-The verification composite must render pixels over the dark background token
-(`#191614`) before thresholding, and must scan every pixel at any alpha.
+**Note on asset regeneration.** `prepare-images.py` re-runs the pale-pixel
+check itself, every time, as the last step of `main()`: it composites every
+visible pixel of `public/logo.png` and `public/favicon.png` over the dark
+background token (`#191614`) and raises if too many are pale. This is
+deliberately not part of `npm run verify` — CI is Node-only and never
+regenerates images, so adding a Python/Pillow dependency there would buy
+nothing; the check belongs at the moment the risk exists, which is here.
 
 ## Swapping in real screenshots
 

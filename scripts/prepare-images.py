@@ -35,7 +35,7 @@ Run:  python3 scripts/prepare-images.py
 """
 from PIL import Image
 
-SRC = "public/logo-original.png"
+SRC = "art/logo-original.png"
 CROP_H = 492          # blank band at y=489..495 separates wordmark from tagline
 LIGHT_BG = (251, 247, 244)   # --background, for the OG card
 DISPLAY_W = 680        # ~2x the hero's 320px CSS ceiling; keeps logo.png well under 120KB
@@ -101,6 +101,74 @@ def main():
     card.paste(scaled, ((1200 - scaled.width) // 2, (630 - scaled.height) // 2), scaled)
     card.convert("RGB").save("public/og-card.png", optimize=True)
     print("public/og-card.png (1200x630)")
+
+    assert_no_pale_pixels("public/logo.png")
+    assert_no_pale_pixels("public/favicon.png")
+
+# --- Pale-on-dark regression guard --------------------------------------
+#
+# This is a post-generation assertion, not a one-off report script: it runs
+# every time prepare-images.py runs, so a future threshold change (or a
+# re-supplied source artwork) cannot silently reintroduce the round-1
+# defect. Deliberately NOT wired into `npm run verify` -- CI is Node-only
+# and never regenerates images, so a Python/Pillow dependency there would
+# buy nothing; this is the moment the risk actually exists.
+DARK_BG = (0x19, 0x16, 0x14)  # --background, dark scheme (#191614)
+
+# Threshold rationale: the round-1 defect (lo/hi = 228/250) left the
+# artwork's own pale panel opaque, measuring 18.92% (logo.png) / 20.22%
+# (favicon.png) of visible pixels as pale-on-dark. The corrected thresholds
+# (lo/hi = 190/210) measure ~0% -- the true anti-aliasing floor (0.0028% /
+# 0.0000%, i.e. at most a handful of edge pixels). 1.0% sits two orders of
+# magnitude above the measured-clean floor and almost 19x below the
+# measured defect, so it has wide margin on both sides while still catching
+# a real regression rather than noise from resizing/re-encoding.
+PALE_THRESHOLD_PCT = 1.0
+
+def assert_no_pale_pixels(path, threshold=PALE_THRESHOLD_PCT):
+    """Composite every visible pixel of `path` over the dark-mode background
+    token and fail if too many are pale -- the signature of a light
+    panel/blotch showing through in dark mode (the defect F2/task-3 caught).
+
+    What makes this discriminate, and must not be weakened:
+    - composite over #191614 BEFORE thresholding (checking raw/unkeyed
+      pixel values misses it entirely -- the panel is only pale relative to
+      a dark backdrop, not in isolation);
+    - scan every pixel, no striding/sampling (the panel is a contiguous
+      region; sampling can step over or through it by luck);
+    - count a pixel as "visible" at any alpha > 8, not just alpha == 255
+      (the feathered keying leaves partially transparent pale pixels that
+      still read as a blotch once composited);
+    - flag "pale" as composited min-channel > 200 (matches the artwork's
+      real content, which sits at min-channel ~55..190, comfortably below).
+    """
+    img = Image.open(path).convert("RGBA")
+    w, h = img.size
+    px = img.load()
+    visible = 0
+    pale = 0
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a <= 8:
+                continue
+            visible += 1
+            af = a / 255.0
+            cr = r * af + DARK_BG[0] * (1 - af)
+            cg = g * af + DARK_BG[1] * (1 - af)
+            cb = b * af + DARK_BG[2] * (1 - af)
+            if min(cr, cg, cb) > 200:
+                pale += 1
+    pct = (pale / visible * 100) if visible else 0.0
+    if pct > threshold:
+        raise AssertionError(
+            f"pale-on-dark check FAILED for {path}: {pct:.2f}% of visible "
+            f"pixels are pale when composited over #191614 ({pale}/{visible} "
+            f"pixels, min channel > 200), exceeding the {threshold}% "
+            f"threshold. This is the round-1 defect signature (measured "
+            f"18.92%/20.22% then); check key_white()'s lo/hi thresholds."
+        )
+    print(f"  pale-on-dark {path}: {pct:.4f}% ({pale}/{visible} visible px) -- OK")
 
 if __name__ == "__main__":
     main()
