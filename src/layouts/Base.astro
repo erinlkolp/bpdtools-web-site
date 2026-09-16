@@ -4,7 +4,8 @@ interface Props {
   description: string;
 }
 const { title, description } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const path = Astro.url.pathname === '/index.html' ? '/' : Astro.url.pathname;
+const canonical = new URL(path, Astro.site).href;
 import '../styles/global.css';
 const year = new Date().getFullYear();
 ---
