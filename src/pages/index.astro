@@ -1,10 +1,189 @@
 ---
 import Base from '../layouts/Base.astro';
+import PhoneMockup from '../components/PhoneMockup.astro';
+import ScreenLog from '../components/ScreenLog.astro';
+import ScreenHistory from '../components/ScreenHistory.astro';
+import ScreenTrends from '../components/ScreenTrends.astro';
+
 const title = 'bpdtools — a private app for logging emotions';
 const description =
   'A private, offline Android app for logging emotions as they happen. A logging tool, not treatment.';
+
+const privacy = [
+  {
+    h: 'Sync is off until you turn it on',
+    p: `With it off, entries live only on your device, in an app-private
+        database no other app can read.`,
+  },
+  {
+    h: 'The app can reach the network',
+    p: `Earlier versions declared no internet permission at all, so Android
+        itself would refuse to open a socket even if a bug tried. That
+        guarantee is gone. What replaces it is weaker: one compiled-in
+        destination, cleartext traffic disabled, and a switch that is off
+        until you turn it on. That is policy enforced by this app's code,
+        where before it was enforced by Android regardless of this app's
+        code. It is worth knowing which of those you have.`,
+  },
+  {
+    h: 'Sync brought in more than one permission',
+    p: `Alongside internet access, the background scheduler adds network-state,
+        wake-lock, boot-completed and foreground-service permissions, and
+        Android may add local-network access at install. Android Settings
+        lists seven, not one — worth knowing before you go looking. None of
+        them read anything on the device, and with sync off nothing is
+        scheduled for them to do.`,
+  },
+  {
+    h: 'The first sync uploads everything',
+    p: `Nothing has ever been marked as synced, so the first successful upload
+        is your entire history, including entries written long before sync
+        existed. The app tells you this, and the exact entry count, before it
+        happens.`,
+  },
+  {
+    h: 'Entries on the server are readable',
+    p: `They are stored in plain SQLite so they can be queried. Transport is
+        encrypted and the disks are encrypted, but this is not end-to-end
+        encryption: anyone with administrator access to that machine can read
+        what you wrote. That was a deliberate trade for queryability.`,
+  },
+  {
+    h: 'Turning sync off does not delete what was already sent',
+    p: `There is no delete endpoint, so the app cannot make one. Removing data
+        from the server is done on the server.`,
+  },
+  {
+    h: 'No account, no login, no telemetry, no analytics',
+    p: `Nothing about your usage is collected or reported. The one credential
+        is a token you paste in yourself.`,
+  },
+  {
+    h: "Android's cloud backup is disabled",
+    p: `An explicit rules file excludes the database, the preferences, and
+        every other file domain. The only upload is the one you switch on, to
+        one address you can name.`,
+  },
+  {
+    h: 'Device-to-device transfer is deliberately left on',
+    p: `It copies your entries straight from an old phone to a new one without
+        touching a server. Your sync token does not come across — it is
+        wrapped with a key held in the Android Keystore, and those keys do not
+        transfer. You paste it again on the new phone.`,
+  },
+];
 ---
 <Base title={title} description={description}>
-  <h1>bpdtools</h1>
-  <p>{description}</p>
+  <header class="hero">
+    <div class="wrap">
+      <img
+        class="hero-logo"
+        src="/logo.png"
+        width="680"
+        height="327"
+        alt="bpdtools"
+        fetchpriority="high"
+      />
+      <h1 class="hero-lede">
+        A private, offline Android app for logging emotions as they happen —
+        what you felt, how strongly, what prompted it, and what you did about
+        it.
+      </h1>
+      <p class="hero-claim">It is a logging tool, not treatment.</p>
+      <p class="hero-status">
+        bpdtools is not publicly distributed yet. There is nothing to download
+        from this page.
+      </p>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="what">
+    <div class="wrap">
+      <h2 id="what">What it does</h2>
+    </div>
+
+    <div class="wrap feature">
+      <div class="feature-text">
+        <h3>Log</h3>
+        <p>
+          Pick an emotion, set an intensity from 0 to 10, add an optional note
+          on what triggered it, tag any coping skills you used, and adjust the
+          timestamp if you are logging after the fact. Saving resets the form
+          in place, so logging several entries in a row is fast.
+        </p>
+      </div>
+      <PhoneMockup label="The Log screen: an emotion picker, an intensity slider set to 7 of 10, a note field, coping-skill tags, and a save button.">
+        <ScreenLog />
+      </PhoneMockup>
+    </div>
+
+    <div class="wrap feature">
+      <div class="feature-text">
+        <h3>History</h3>
+        <p>
+          Everything you have logged, most recent first, grouped by day. Tap an
+          entry to edit it. Deleting offers an Undo — a visible button rather
+          than a swipe, because a swipe is invisible to a screen reader and
+          would leave some people with no way to discover it.
+        </p>
+      </div>
+      <PhoneMockup label="The History screen: entries grouped under Today and Yesterday, each showing an emotion, an intensity out of ten, a time, and any skills used.">
+        <ScreenHistory />
+      </PhoneMockup>
+    </div>
+
+    <div class="wrap feature">
+      <div class="feature-text">
+        <h3>Trends</h3>
+        <p>
+          Three views over the last 7 days, 30 days, or all time: mean
+          intensity per day, your most frequent emotions, and average intensity
+          for each one. The intensity axis is pinned to 0–10 rather than
+          auto-scaled, gaps are left as gaps rather than joined up, and every
+          chart has a plain-text equivalent beside it — not just a picture.
+        </p>
+      </div>
+      <PhoneMockup label="The Trends screen: a seven-day bar chart of mean intensity on a fixed zero-to-ten scale, with a list of the most frequent emotions below it.">
+        <ScreenTrends />
+      </PhoneMockup>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="privacy">
+    <div class="wrap">
+      <h2 id="privacy">Where your entries go</h2>
+      <p class="section-lede">
+        This is a mental-health-adjacent app, so it comes before anything else —
+        including the parts that are not flattering.
+      </p>
+      <dl class="privacy">
+        {privacy.map((item) => (
+          <div class="privacy-item">
+            <dt>{item.h}</dt>
+            <dd>{item.p}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="note">
+        This is exactly what the app's own About screen says. If this page and
+        that screen ever disagree, that is a bug.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="isnt">
+    <div class="wrap">
+      <h2 id="isnt">What it isn't</h2>
+      <p>
+        bpdtools gives no advice, no diagnosis, and no suggestions. It does not
+        interpret what you log, score it, or tell you what to do about it. It
+        records what you tell it and helps you look back at it later.
+      </p>
+      <p>
+        The coping-skill vocabulary is drawn from Dialectical Behaviour Therapy.
+        Naming a skill is not recommending it.
+      </p>
+      <p class="hero-claim">It is a logging tool, not treatment.</p>
+    </div>
+  </section>
 </Base>
