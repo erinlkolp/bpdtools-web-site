@@ -1,0 +1,87 @@
+/* Palette copied verbatim from the bpdtools Android app:
+   app/src/main/java/com/bpdtools/app/ui/theme/Color.kt
+   The app's ColorContrastTest proves these pairings. Do not recombine
+   them without running npm run check:contrast. */
+:root {
+  --background: #FBF7F4;
+  --surface: #FFFFFF;
+  --surface-variant: #EFE7E1;
+  --primary: #3D6B6B;
+  --on-primary: #FFFFFF;
+  --primary-container: #CFE3E0;
+  --on-primary-container: #1C3533;
+  --secondary: #A6674F;
+  --on-surface: #2A2422;
+  --on-surface-variant: #5A504B;
+  --outline: #8A7D76;
+  --error: #B3261E;
+
+  --measure: 34rem;
+  --gutter: clamp(1rem, 5vw, 2rem);
+  --radius: 0.75rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #191614;
+    --surface: #201C1A;
+    --surface-variant: #332D29;
+    --primary: #8FC0BB;
+    --on-primary: #10322F;
+    --primary-container: #2C4B49;
+    --on-primary-container: #CFE3E0;
+    --secondary: #D9A088;
+    --on-surface: #EDE5E0;
+    --on-surface-variant: #C4B8B1;
+    --outline: #8C7F78;
+    --error: #F2B8B5;
+
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--on-surface);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+p { text-wrap: pretty; }
+
+a { color: var(--primary); }
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+  padding: 0.75rem 1rem;
+  z-index: 10;
+}
+.skip-link:focus { left: 0; }
+
+.wrap {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
