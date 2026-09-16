@@ -1,0 +1,17 @@
+{
+  "name": "bpdtools-web-site",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check:build": "node scripts/check-build.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "verify": "npm run check:contrast && npm run build && npm run check:build"
+  },
+  "dependencies": {
+    "astro": "^7.3.2"
+  }
+}
