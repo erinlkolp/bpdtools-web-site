@@ -180,47 +180,69 @@ edges.
 
 ## Styling
 
-Palette tokens lifted verbatim from the app's
-`app/src/main/java/com/bpdtools/app/ui/theme/Color.kt`, as CSS custom
-properties, so the site and the app are literally the same colours:
+**Revised 2026-09-17.** The site originally used the Android app's palette
+verbatim, so site and app were literally the same colours. That constraint has
+been **deliberately retired**: the owner asked for a more corporate look and
+accepted the loss of app-parity to get it.
+
+The palette is now cool neutral greys with the app's teal retained as the one
+visual thread back to the app:
 
 | Token | Light | Dark |
 |---|---|---|
-| background | `#FBF7F4` | `#191614` |
-| surface | `#FFFFFF` | `#201C1A` |
-| surface variant | `#EFE7E1` | `#332D29` |
-| primary | `#3D6B6B` | `#8FC0BB` |
-| on primary | `#FFFFFF` | `#10322F` |
-| primary container | `#CFE3E0` | `#2C4B49` |
-| on primary container | `#1C3533` | `#CFE3E0` |
-| secondary | `#A6674F` | `#D9A088` |
-| on surface | `#2A2422` | `#EDE5E0` |
-| on surface variant | `#5A504B` | `#C4B8B1` |
-| outline | `#8A7D76` | `#8C7F78` |
+| background | `#F7F8FA` | `#0F1319` |
+| surface | `#FFFFFF` | `#161C24` |
+| surface variant | `#EDEFF3` | `#232B36` |
+| primary (teal) | `#36635F` | `#84BDB6` |
+| on primary | `#FFFFFF` | `#0B2623` |
+| primary container | `#DBE8E6` | `#234441` |
+| on primary container | `#13302C` | `#CFE5E2` |
+| secondary (slate) | `#45577A` | `#A8BADC` |
+| on surface | `#1B2230` | `#E7EBF1` |
+| on surface variant | `#515C6B` | `#AAB5C3` |
+| outline | `#747D8D` | `#76849A` |
+| divider | `#E2E6EC` | `#2A323D` |
 
-Dark mode via `prefers-color-scheme`, no toggle.
+Dark mode via `prefers-color-scheme`, no toggle. System font stack; no webfont.
+Mobile-first.
 
-Existing foreground/background *pairings* from the app are reused rather than
-recombined, because `ColorContrastTest` already proves those ratios. Any pair
-the app does not already use is checked numerically against WCAG AA before it
-ships. The site adopts the app's own two floors verbatim: **4.5:1 for body
-text, 3:1 for large text and non-text graphics** — the `bodyTextFloor` and
-`graphicalFloor` constants in `ColorContrastTest`.
+**Two tokens where one used to be.** `--outline` is structural and is held to
+the 3:1 non-text floor in the checker. `--divider` is a decorative hairline
+that does not meet 3:1 and is listed in `EXEMPT` with a written reason: it
+separates surfaces visually and carries no information. Conflating the two is
+how a decorative border ends up excused alongside one that genuinely needs to
+be perceivable.
 
-**Secondary is an accent colour, never body copy.** Terracotta `#A6674F`
-measures 4.22:1 on the light background and 4.49:1 on light surface — below
-the body floor, comfortably above the graphical one. Dark-mode
-`#D9A088` is unconstrained at 8.00:1. This matches the app, whose contrast
-test holds `Secondary` to no body-text assertion. The site therefore uses
-secondary only for rules, icons, and large headings, and the contrast check
-enforces that by testing it against the 3:1 floor alone. A failing ratio
-means the colour is wrong, or the role is wrong — never that the threshold is
-wrong.
+**Roles are classified by what renders, not by what the spec calls them.**
+The previous palette's terracotta was declared an "accent, never body copy",
+and the checker honoured the declaration — then `.hero-claim` shipped at 18px
+weight 600, which is body text by WCAG's definition, below the floor it
+needed. Slate `--secondary` now renders as link text in the header and footer
+and is therefore held to the 4.5:1 **body** floor, which it clears at 6.82:1
+light and 9.51:1 dark.
 
-System font stack; no webfont, so no third-party request and nothing to block
-render.
+Floors are unchanged: 4.5:1 body text, 3:1 large text and non-text graphics,
+where large text means 24px at any weight or 18.66px when bold (weight >= 700).
+All 38 checked pairs pass. A failing ratio means the colour is wrong, or the
+role is wrong — never that the threshold is wrong.
 
-Mobile-first. This is a phone app's site and will mostly be read on a phone.
+`--error` was removed. It was retained earlier only because the palette had to
+match `Color.kt` exactly; with that constraint gone, an unused token is just
+dead code.
+
+## Layout
+
+The page is a conventional product-marketing structure: a slim sticky header
+with the wordmark and anchor navigation, a centred hero, a three-up feature
+grid, a banded privacy section in a two-column grid, a centred closing section,
+and a structured footer.
+
+**There is no call-to-action button, by design.** The shape normally centres on
+one, but the app is not publicly distributed and there is nothing honest to
+link to. The line stating that sits where a CTA would.
+
+`public/wordmark.png` is a lettering-only crop of the logo, added because the
+full 2.08:1 logo is illegible at header-bar height.
 
 ## Accessibility
 

@@ -2,41 +2,50 @@
    app/src/main/java/com/bpdtools/app/ui/theme/Color.kt
    The app's ColorContrastTest proves these pairings. Do not recombine
    them without running npm run check:contrast. */
+/* Palette: cool neutral greys with the app's teal retained as the single
+   accent. This deliberately DIVERGES from the Android app's Color.kt --
+   see the design spec. Every pairing below is checked by
+   scripts/check-contrast.mjs; 38 pairs, 0 failures at time of writing.
+
+   --outline is STRUCTURAL and genuinely clears the 3:1 non-text floor.
+   --divider is a decorative hairline that does not, and is listed in the
+   checker's EXEMPT with a written reason. Do not conflate them. */
 :root {
-  --background: #FBF7F4;
+  --background: #F7F8FA;
   --surface: #FFFFFF;
-  --surface-variant: #EFE7E1;
-  --primary: #3D6B6B;
+  --surface-variant: #EDEFF3;
+  --primary: #36635F;
   --on-primary: #FFFFFF;
-  --primary-container: #CFE3E0;
-  --on-primary-container: #1C3533;
-  --secondary: #A6674F;
-  --on-surface: #2A2422;
-  --on-surface-variant: #5A504B;
-  --outline: #8A7D76;
-  --error: #B3261E;
+  --primary-container: #DBE8E6;
+  --on-primary-container: #13302C;
+  --secondary: #45577A;
+  --on-surface: #1B2230;
+  --on-surface-variant: #515C6B;
+  --outline: #747D8D;
+  --divider: #E2E6EC;
 
   --measure: 34rem;
   --gutter: clamp(1rem, 5vw, 2rem);
-  --radius: 0.75rem;
+  --radius: 0.625rem;
+  --header-h: 3.5rem;
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #191614;
-    --surface: #201C1A;
-    --surface-variant: #332D29;
-    --primary: #8FC0BB;
-    --on-primary: #10322F;
-    --primary-container: #2C4B49;
-    --on-primary-container: #CFE3E0;
-    --secondary: #D9A088;
-    --on-surface: #EDE5E0;
-    --on-surface-variant: #C4B8B1;
-    --outline: #8C7F78;
-    --error: #F2B8B5;
+    --background: #0F1319;
+    --surface: #161C24;
+    --surface-variant: #232B36;
+    --primary: #84BDB6;
+    --on-primary: #0B2623;
+    --primary-container: #234441;
+    --on-primary-container: #CFE5E2;
+    --secondary: #A8BADC;
+    --on-surface: #E7EBF1;
+    --on-surface-variant: #AAB5C3;
+    --outline: #76849A;
+    --divider: #2A323D;
 
     color-scheme: dark;
   }
@@ -80,16 +89,11 @@ p { text-wrap: pretty; }
   padding-inline: var(--gutter);
 }
 
+/* Must follow .wrap: same specificity, so source order decides. */
+.wrap--wide { max-width: 72rem; }
+
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
-}
-
-.site-footer {
-  margin-top: 4rem;
-  padding-block: 2rem;
-  border-top: 1px solid var(--outline);
-  color: var(--on-surface-variant);
-  font-size: 0.9375rem;
 }
 
 .visually-hidden {
@@ -159,47 +163,194 @@ p { text-wrap: pretty; }
 .scr-bars { display: flex; align-items: flex-end; gap: 0.25rem; height: 3.5rem; }
 .scr-bars > span { flex: 1; background: var(--primary); border-radius: 2px 2px 0 0; }
 
-.hero { padding-block: clamp(2.5rem, 10vw, 5rem) 1rem; }
-.hero-logo { display: block; width: min(20rem, 80%); height: auto; margin: 0 0 1.5rem; }
-.hero-lede { font-size: clamp(1.375rem, 4.5vw, 1.875rem); font-weight: 600; margin: 0 0 1rem; }
-.hero-claim {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--secondary);
-  border-left: 3px solid var(--secondary);
-  padding-left: 0.75rem;
-  margin: 1.5rem 0;
+
+/* ---------- site chrome ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--divider);
 }
-.hero-status { color: var(--on-surface-variant); font-size: 0.9375rem; }
+.site-header .wrap {
+  max-width: 72rem;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.brand { display: inline-flex; align-items: center; text-decoration: none; }
+.brand img { display: block; height: 1.0625rem; width: auto; }
+.nav { display: flex; gap: 1.25rem; }
+.nav a {
+  color: var(--secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.nav a:hover { color: var(--on-surface); }
 
-.section { padding-block: clamp(2rem, 7vw, 3.5rem); }
-.section h2 { font-size: clamp(1.5rem, 5vw, 2rem); margin-bottom: 0.5rem; }
-.section-lede { color: var(--on-surface-variant); margin-bottom: 2rem; }
-
-.feature { display: grid; gap: 1.5rem; margin-block: 2.5rem; }
-.feature-text h3 { font-size: 1.25rem; margin: 0 0 0.5rem; }
-.feature-text p { margin: 0; }
+.site-footer {
+  margin-top: 0;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--divider);
+  background: var(--surface);
+  color: var(--on-surface-variant);
+  font-size: 0.875rem;
+}
+.footer-grid {
+  max-width: 72rem;
+  display: grid;
+  gap: 1.5rem;
+}
+.footer-brand img { display: block; height: 1rem; width: auto; margin-bottom: 0.75rem; }
+.footer-brand p { margin: 0; max-width: 26rem; }
+.footer-meta { display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; }
+.footer-meta a { color: var(--secondary); text-decoration: none; }
+.footer-meta a:hover { color: var(--on-surface); }
 
 @media (min-width: 46rem) {
-  .wrap { max-width: 60rem; }
-  .feature { grid-template-columns: 1fr auto; align-items: center; gap: 3rem; }
-  .hero .wrap, .section > .wrap:first-child { max-width: 46rem; margin-inline: auto; }
+  .footer-grid { grid-template-columns: 1fr auto; align-items: end; }
 }
 
-.privacy { margin: 0; display: grid; gap: 1.25rem; }
-.privacy-item {
+/* ---------- hero ---------- */
+
+.hero {
+  padding-block: clamp(3rem, 9vw, 5.5rem) clamp(2rem, 6vw, 3.5rem);
+  text-align: center;
+  border-bottom: 1px solid var(--divider);
+}
+.hero .wrap { max-width: 48rem; }
+.hero-logo {
+  display: block;
+  width: min(17rem, 72%);
+  height: auto;
+  margin: 0 auto 1.75rem;
+}
+.hero-lede {
+  font-size: clamp(1.5rem, 4.6vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+}
+.hero-claim {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-primary-container);
+  background: var(--primary-container);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  margin: 0.5rem 0 1.5rem;
+}
+.hero-status {
+  color: var(--on-surface-variant);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+/* ---------- sections ---------- */
+
+.section { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
+.section--band { background: var(--surface-variant); border-block: 1px solid var(--divider); }
+.section-head { max-width: 46rem; margin-inline: auto; text-align: center; }
+.section h2 {
+  font-size: clamp(1.5rem, 4vw, 2.125rem);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5rem;
+}
+.section-lede { color: var(--on-surface-variant); margin: 0 0 2.5rem; }
+
+/* ---------- three-up feature grid ---------- */
+
+.features {
+  max-width: 72rem;
+  display: grid;
+  gap: 1.5rem;
+}
+.feature-card {
   background: var(--surface);
-  border: 1px solid var(--surface-variant);
+  border: 1px solid var(--divider);
   border-radius: var(--radius);
-  padding: 1rem 1.125rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 }
-.privacy dt { font-weight: 600; margin-bottom: 0.25rem; }
-.privacy dd { margin: 0; color: var(--on-surface-variant); }
-
-.note {
-  margin-top: 2rem;
-  padding-left: 0.75rem;
-  border-left: 3px solid var(--outline);
+.feature-card h3 {
+  font-size: 1.125rem;
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+.feature-card p {
+  margin: 0 0 1.5rem;
   color: var(--on-surface-variant);
   font-size: 0.9375rem;
 }
+.feature-card .mockup { margin-top: auto; }
+
+@media (min-width: 52rem) {
+  .features { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .feature-card p { min-height: 7.5rem; }
+}
+
+/* The screen content is laid out for a 16rem frame, so NARROWING the box
+   reflows and breaks it. Scale the whole frame instead and let a fixed-height
+   flex container reserve the reduced space. */
+.feature-card .mockup {
+  width: 100%;
+  height: 21.5rem;
+  align-items: flex-start;
+  overflow: hidden;
+  margin-top: auto;
+}
+.feature-card .phone {
+  width: 16rem;
+  flex: none;
+  transform: scale(0.6);
+  transform-origin: top center;
+  box-shadow: 0 1px 10px rgb(0 0 0 / 0.07);
+}
+
+/* ---------- privacy ---------- */
+
+.privacy {
+  margin: 0;
+  max-width: 72rem;
+  display: grid;
+  gap: 1rem;
+}
+.privacy-item {
+  background: var(--surface);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  padding: 1.125rem 1.25rem;
+}
+.privacy dt { font-weight: 650; margin-bottom: 0.35rem; }
+.privacy dd { margin: 0; color: var(--on-surface-variant); font-size: 0.9375rem; }
+
+@media (min-width: 52rem) {
+  .privacy { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
+.note {
+  max-width: 46rem;
+  margin: 2rem auto 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--outline);
+  color: var(--on-surface-variant);
+  font-size: 0.875rem;
+}
+
+/* ---------- closing ---------- */
+
+.closing { max-width: 42rem; margin-inline: auto; text-align: center; }
+.closing p { color: var(--on-surface-variant); }
+.closing .hero-claim { margin-top: 1rem; }

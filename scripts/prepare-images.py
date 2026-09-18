@@ -91,6 +91,16 @@ def main():
     square.resize((180, 180), Image.LANCZOS).save("public/favicon.png", optimize=True)
     print("public/favicon.png (180x180)")
 
+    # Header wordmark: the "bpdtools" lettering alone, without the mark above
+    # it. The full logo is 2.08:1, so at a header-bar height of ~24px it is
+    # only ~50px wide and illegible. The all-white band at y=334..357 separates
+    # the illustration from the lettering, so cropping there severs no glyph.
+    wordmark = logo.crop((0, 340, w, CROP_H))
+    wm = wordmark.copy()
+    wm.thumbnail((520, 200), Image.LANCZOS)
+    wm.save("public/wordmark.png", optimize=True)
+    print(f"public/wordmark.png {wm.size}")
+
     # OG card: the logo centred on the light background token. Kept at
     # native pre-resize resolution before the thumbnail fit -- 1200x630
     # is a fixed convention for social-preview cards, not a hero-image
