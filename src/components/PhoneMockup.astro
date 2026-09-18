@@ -1,15 +1,32 @@
 ---
 interface Props {
+  /** Basename under /screens: "log" pairs log-light.webp with log-dark.webp. */
+  name: string;
   /** Text equivalent, for anyone who cannot see the frame. */
   label: string;
 }
-const { label } = Astro.props;
+const { name, label } = Astro.props;
 ---
 <figure class="mockup">
   <div class="phone" aria-hidden="true">
-    <div class="phone-screen">
-      <slot />
-    </div>
+    {/* The frame is decorative; the figcaption carries the real description.
+        Two sources rather than one, because a screenshot cannot recolour
+        itself the way the CSS mockups this replaced used to -- without the
+        dark pair, a dark-mode reader gets three glowing white rectangles. */}
+    <picture class="phone-screen">
+      <source
+        srcset={`/screens/${name}-dark.webp`}
+        media="(prefers-color-scheme: dark)"
+      />
+      <img
+        src={`/screens/${name}-light.webp`}
+        width="512"
+        height="1022"
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
   </div>
   <figcaption class="visually-hidden">{label}</figcaption>
 </figure>

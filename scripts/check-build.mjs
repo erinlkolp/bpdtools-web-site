@@ -78,6 +78,62 @@ if (existsSync(indexPath)) {
   }
 }
 
+// The phone mockups are real device screenshots as of the screenshot
+// swap. Three things can rot here and none of them are visible in a
+// passing build: a missing file (the <picture> falls back to a broken
+// image), a light/dark pair that drifts out of sync (a dark-mode reader
+// silently gets the light shot), or a re-export at full device resolution
+// (114KB of WebP becomes 900KB of page weight).
+const SCREENS = ['log', 'history', 'trends'];
+const MAX_SCREEN_BYTES = 60 * 1024; // largest today is log-light at ~26KB
+
+for (const name of SCREENS) {
+  for (const theme of ['light', 'dark']) {
+    const rel = `screens/${name}-${theme}.webp`;
+    const path = `${DIST}/${rel}`;
+    check(`dist/${rel} exists`, existsSync(path));
+    if (existsSync(path)) {
+      const bytes = statSync(path).size;
+      check(
+        `dist/${rel} is under ${MAX_SCREEN_BYTES}B (is ${bytes}B)`,
+        bytes <= MAX_SCREEN_BYTES,
+      );
+    }
+  }
+}
+
+if (existsSync(indexPath)) {
+  const html = readFileSync(indexPath, 'utf8');
+  for (const name of SCREENS) {
+    check(
+      `${name} mockup offers a dark-scheme source`,
+      new RegExp(
+        `<source[^>]*srcset="/screens/${name}-dark\\.webp"[^>]*media="\\(prefers-color-scheme: dark\\)"`,
+      ).test(html) ||
+      new RegExp(
+        `<source[^>]*media="\\(prefers-color-scheme: dark\\)"[^>]*srcset="/screens/${name}-dark\\.webp"`,
+      ).test(html),
+    );
+    check(
+      `${name} mockup has a light-scheme <img> with width and height`,
+      new RegExp(
+        `<img[^>]*src="/screens/${name}-light\\.webp"[^>]*width="\\d+"[^>]*height="\\d+"`,
+      ).test(html),
+    );
+  }
+  // The frames are decorative; the description lives in the figcaption.
+  // An alt that is not empty would double-announce it.
+  //
+  // The count is asserted separately and FIRST because [].every() is true:
+  // if the selector ever stops matching, the alt check below would pass
+  // vacuously rather than fail, which is the worst way for a check to rot.
+  const screenImgs = html.match(/<img[^>]*src="\/screens\/[^"]*"[^>]*>/g) || [];
+  check(`exactly ${SCREENS.length} screenshot <img>s (found ${screenImgs.length})`,
+    screenImgs.length === SCREENS.length);
+  check('screenshot <img>s are decorative (empty alt)',
+    screenImgs.length > 0 && screenImgs.every((tag) => /\balt=""/.test(tag)));
+}
+
 check('dist/CNAME exists', existsSync(`${DIST}/CNAME`));
 if (existsSync(`${DIST}/CNAME`)) {
   check('CNAME is bpdtools.cloud',

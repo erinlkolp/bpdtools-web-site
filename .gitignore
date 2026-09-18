@@ -3,3 +3,10 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# Raw device captures. Deliberately NOT tracked: this repo is public, and
+# the raws still carry the status bar -- including whatever notification
+# icons were showing when they were taken. Only the cropped, downscaled
+# derivatives in public/screens/ are safe to publish. Regenerate the raws
+# with scripts/capture-screens.sh against a connected device.
+art/screens/

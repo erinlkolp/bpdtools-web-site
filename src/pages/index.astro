@@ -1,9 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import PhoneMockup from '../components/PhoneMockup.astro';
-import ScreenLog from '../components/ScreenLog.astro';
-import ScreenHistory from '../components/ScreenHistory.astro';
-import ScreenTrends from '../components/ScreenTrends.astro';
 
 const title = 'bpdtools — a private app for logging emotions';
 const description =
@@ -129,9 +126,10 @@ const privacy = [
           timestamp if you are logging after the fact. Saving resets the form
           in place, so logging several entries in a row is fast.
         </p>
-        <PhoneMockup label="The Log screen: an emotion picker, an intensity slider set to 7 of 10, a note field, coping-skill tags, and a save button.">
-          <ScreenLog />
-        </PhoneMockup>
+        <PhoneMockup
+          name="log"
+          label="The Log screen: a grid of emotion buttons with Anger selected, an intensity of 7 above a slider, a note reading &quot;Left on read again.&quot;, and a row of coping-skill buttons."
+        />
       </article>
 
       <article class="feature-card">
@@ -142,9 +140,10 @@ const privacy = [
           than a swipe, because a swipe is invisible to a screen reader and
           would leave some people with no way to discover it.
         </p>
-        <PhoneMockup label="The History screen: entries grouped under Today and Yesterday, each showing an emotion, an intensity out of ten, a time, and any skills used.">
-          <ScreenHistory />
-        </PhoneMockup>
+        <PhoneMockup
+          name="history"
+          label="The History screen: entries grouped by day under Today, Yesterday and earlier dates, each row showing an emotion, an intensity out of ten, and a delete button."
+        />
       </article>
 
       <article class="feature-card">
@@ -153,11 +152,12 @@ const privacy = [
           Three views over the last 7 days, 30 days, or all time: mean
           intensity per day, your most frequent emotions, and average intensity
           for each one. The intensity axis is pinned to 0–10 rather than
-          auto-scaled, and every chart has a plain-text equivalent beside it.
+          auto-scaled, and every chart has a plain-text equivalent beneath it.
         </p>
-        <PhoneMockup label="The Trends screen: a seven-day bar chart of mean intensity on a fixed zero-to-ten scale, with a list of the most frequent emotions below it.">
-          <ScreenTrends />
-        </PhoneMockup>
+        <PhoneMockup
+          name="trends"
+          label="The Trends screen: a 7 days, 30 days and all time selector, a line chart of intensity over time with each day's figure written out beneath it, and lists of the most frequent emotions and their average intensities."
+        />
       </article>
     </div>
   </section>

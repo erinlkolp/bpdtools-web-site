@@ -142,7 +142,7 @@ const EXEMPT = [
   {
     fg: 'surface-variant', bg: 'surface',
     reason:
-      "Decorative divider only (the .privacy-item / .scr-card border), " +
+      "Decorative divider only (the .privacy-item border), " +
       "redundant with the grid gap between cards. WCAG 1.4.11 does not " +
       "require contrast for a boundary that is not needed to understand " +
       "content.",
@@ -150,15 +150,19 @@ const EXEMPT = [
   {
     fg: 'primary-container', bg: 'background',
     reason:
-      "Chip fill (.scr-chip[data-on]) inside an aria-hidden decorative " +
-      "phone mockup; the chip's own label text carries its real contrast " +
-      "ratio (on-primary-container on primary-container, which IS in " +
-      "PAIRS). Recorded from manual review, not from the scan below: the " +
-      "scanner only sees pairings declared within one CSS rule, and this " +
-      "one only exists because .scr-chip[data-on] (fills with " +
-      "primary-container) is nested inside .phone-screen (fills with " +
+      "Pill fill behind .hero-claim (\"It is a logging tool, not " +
+      "treatment\"), against the page background. The fill is a decorative " +
+      "container, not a control and not a graphic needed to understand the " +
+      "sentence -- the words are legible without it, and their own ratio " +
+      "(on-primary-container on primary-container) IS held to the body " +
+      "floor in PAIRS. Recorded from manual review, not from the scan " +
+      "below: it exists only because .hero-claim (fills with " +
+      "primary-container) sits inside .hero / .closing (which fill with " +
       "background) in the markup -- two separate rules, invisible to a " +
-      "lexical scan of global.css alone.",
+      "lexical scan of global.css alone. NOTE: until the phone mockups " +
+      "became real screenshots this entry was justified by .scr-chip " +
+      "instead, which no longer exists; the pairing outlived its original " +
+      "cause.",
   },
   {
     fg: 'divider', bg: 'surface',
