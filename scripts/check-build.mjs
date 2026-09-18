@@ -38,8 +38,16 @@ if (existsSync(indexPath)) {
   check('single h1', (html.match(/<h1[\s>]/gi) || []).length === 1);
   check('not-treatment framing is in the visible copy',
     /class="hero-claim"[^>]*>[^<]*not treatment/i.test(html));
-  check('discloses server-side readability',
-    /not end-to-end/i.test(html) && /entries on the server are readable/i.test(html));
+  // Was 'discloses server-side readability' until entries became sealed on
+  // the phone. The guard is inverted rather than dropped: its job was never
+  // that one sentence, it was that the encryption disclosure cannot quietly
+  // drift from what the app actually does -- in either direction.
+  check('discloses end-to-end encryption',
+    /encrypted end to end/i.test(html) && /AES-256-GCM/i.test(html));
+  check('no stale claim that the server can read entries',
+    !/not end-to-end/i.test(html) && !/entries on the server are readable/i.test(html));
+  check('still discloses the metadata the server can see',
+    /timing, not content/i.test(html));
   check('states it is not distributed yet', /not .{0,30}available|not .{0,30}distributed/i.test(html));
   check('no contact email', !/mailto:/i.test(html));
   const phoneCount = (html.match(/class="phone"/g) || []).length;

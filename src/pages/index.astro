@@ -34,17 +34,22 @@ const privacy = [
   {
     h: 'The first sync uploads everything',
     p: `If you turn sync on, the first upload is everything: every entry,
-        including the text you wrote in "What happened?", and including entries
-        logged long before sync existed. Nothing has ever been marked as
-        synced, so the first successful upload is your entire history. The app
-        tells you this, and the exact entry count, before it happens.`,
+        including what you wrote in "What happened?", and including entries
+        logged long before sync existed. Each one is sealed on the phone before
+        it leaves. Nothing has ever been marked as synced, so the first
+        successful upload is your entire history. The app tells you this, and
+        the exact entry count, before it happens.`,
   },
   {
-    h: 'Entries on the server are readable',
-    p: `They are stored in plain SQLite so they can be queried. Transport is
-        encrypted and the disks are encrypted, but this is not end-to-end
-        encryption: anyone with administrator access to that machine can read
-        what you wrote. That was a deliberate trade for queryability.`,
+    h: 'Entries are encrypted end to end',
+    p: `The phone seals the emotion, the intensity, the coping skills and the
+        trigger note together under AES-256-GCM before any of it is sent, and
+        the key never leaves your device. The server stores a blob it has no
+        key for: nobody with access to that machine can read what you wrote —
+        not with administrator access, not from a disk snapshot, not from the
+        offsite backup. What it can still see is that an entry exists, when it
+        was recorded, created and last updated, whether it is a deletion, and
+        when it arrived. Timing, not content.`,
   },
   {
     h: 'Turning sync off does not delete what was already sent',
@@ -53,15 +58,17 @@ const privacy = [
   },
   {
     h: 'Deleting an entry does not unsend it',
-    p: `Once an entry has synced, deleting it on the phone does not remove its
-        text from the server. The row is kept there as a tombstone with its
-        content intact, so that a restore is faithful. Clearing the app's
-        storage does not reach it.`,
+    p: `Once an entry has synced, deleting it on the phone does not remove the
+        row from the server. The row is kept there as a tombstone so that a
+        restore is faithful, but its payload stays sealed — the server cannot
+        read what was deleted any more than it could read it before. Clearing
+        the app's storage does not reach it.`,
   },
   {
     h: 'No account, no login, no telemetry, no analytics',
-    p: `Nothing about your usage is collected or reported. The one credential
-        is a token you paste in yourself.`,
+    p: `Nothing about your usage is collected or reported. There are two
+        secrets, and you paste in both yourself: the sync token, and the
+        encryption key that seals your entries.`,
   },
   {
     h: "Android's cloud backup is disabled",
@@ -72,9 +79,10 @@ const privacy = [
   {
     h: 'Device-to-device transfer is deliberately left on',
     p: `It copies your entries straight from an old phone to a new one without
-        touching a server. Your sync token does not come across — it is
-        wrapped with a key held in the Android Keystore, and those keys do not
-        transfer. You paste it again on the new phone.`,
+        touching a server. Neither of your secrets comes across — the token and
+        the encryption key are both wrapped with a key held in the Android
+        Keystore, and those keys do not transfer. You paste both in again on
+        the new phone.`,
   },
   {
     h: 'Deleting your data',
