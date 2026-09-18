@@ -48,6 +48,8 @@ if (existsSync(indexPath)) {
     !/not end-to-end/i.test(html) && !/entries on the server are readable/i.test(html));
   check('still discloses the metadata the server can see',
     /timing, not content/i.test(html));
+  check('discloses that the metadata is bound to the ciphertext',
+    /bound to the sealed blob/i.test(html) && /fail the next decrypt/i.test(html));
   check('states it is not distributed yet', /not .{0,30}available|not .{0,30}distributed/i.test(html));
   check('no contact email', !/mailto:/i.test(html));
   const phoneCount = (html.match(/class="phone"/g) || []).length;

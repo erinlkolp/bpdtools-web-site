@@ -43,13 +43,17 @@ const privacy = [
   {
     h: 'Entries are encrypted end to end',
     p: `The phone seals the emotion, the intensity, the coping skills and the
-        trigger note together under AES-256-GCM before any of it is sent, and
-        the key never leaves your device. The server stores a blob it has no
-        key for: nobody with access to that machine can read what you wrote —
-        not with administrator access, not from a disk snapshot, not from the
-        offsite backup. What it can still see is that an entry exists, when it
-        was recorded, created and last updated, whether it is a deletion, and
-        when it arrived. Timing, not content.`,
+        trigger note together under AES-256-GCM, with a 32-byte key that never
+        leaves your device, before any of it is sent. The server stores a blob
+        it has no key for: nobody with access to that machine can read what you
+        wrote — not with administrator access, not from a disk snapshot, not
+        from the offsite backup. What it can still see is the public metadata:
+        the entry's id, when it was recorded, created and last updated, whether
+        it is a deletion, and when it arrived. Timing, not content. That
+        metadata is bound to the sealed blob rather than merely filed beside
+        it, so a server that reordered your entries, backdated one, or
+        un-flipped a deletion would fail the next decrypt rather than manage it
+        quietly.`,
   },
   {
     h: 'Turning sync off does not delete what was already sent',
