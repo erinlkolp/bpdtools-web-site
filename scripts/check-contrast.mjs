@@ -107,10 +107,11 @@ const PAIRS = [
   ['primary', 'background', BODY],
   ['primary', 'surface', BODY],
   // Accent role only — see the spec. Body copy never uses secondary.
-  ['secondary', 'background', GRAPHICAL],
-  ['secondary', 'surface', GRAPHICAL],
+  ['secondary', 'background', BODY],
+  ['secondary', 'surface', BODY],
   ['outline', 'background', GRAPHICAL],
   ['outline', 'surface', GRAPHICAL],
+  ['outline', 'surface-variant', GRAPHICAL],
 ];
 
 const failures = [];
@@ -158,6 +159,29 @@ const EXEMPT = [
       "primary-container) is nested inside .phone-screen (fills with " +
       "background) in the markup -- two separate rules, invisible to a " +
       "lexical scan of global.css alone.",
+  },
+  {
+    fg: 'divider', bg: 'surface',
+    reason:
+      "Hairline boundary only (card borders, the header rule, the footer " +
+      "rule, section band edges). It exists to separate surfaces visually, " +
+      "never to carry information, and nothing is unreadable without it. " +
+      "WCAG 1.4.11 applies to components and graphics required to " +
+      "understand content; this is neither. Structural borders that DO " +
+      "need to be perceivable use --outline, which is held to the 3:1 " +
+      "graphical floor in PAIRS.",
+  },
+  {
+    fg: 'divider', bg: 'background',
+    reason:
+      "Same hairline token as above, against the page background rather " +
+      "than a card surface (the hero's bottom rule and the band edges).",
+  },
+  {
+    fg: 'divider', bg: 'surface-variant',
+    reason:
+      "Same hairline token, against the banded privacy section's own " +
+      "background.",
   },
 ];
 

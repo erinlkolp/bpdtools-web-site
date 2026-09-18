@@ -113,12 +113,15 @@ const privacy = [
   </header>
 
   <section class="section" aria-labelledby="what">
-    <div class="wrap">
+    <div class="wrap section-head">
       <h2 id="what">What it does</h2>
+      <p class="section-lede">
+        Three screens, and nothing it does not need.
+      </p>
     </div>
 
-    <div class="wrap feature">
-      <div class="feature-text">
+    <div class="wrap features">
+      <article class="feature-card">
         <h3>Log</h3>
         <p>
           Pick an emotion, set an intensity from 0 to 10, add an optional note
@@ -126,14 +129,12 @@ const privacy = [
           timestamp if you are logging after the fact. Saving resets the form
           in place, so logging several entries in a row is fast.
         </p>
-      </div>
-      <PhoneMockup label="The Log screen: an emotion picker, an intensity slider set to 7 of 10, a note field, coping-skill tags, and a save button.">
-        <ScreenLog />
-      </PhoneMockup>
-    </div>
+        <PhoneMockup label="The Log screen: an emotion picker, an intensity slider set to 7 of 10, a note field, coping-skill tags, and a save button.">
+          <ScreenLog />
+        </PhoneMockup>
+      </article>
 
-    <div class="wrap feature">
-      <div class="feature-text">
+      <article class="feature-card">
         <h3>History</h3>
         <p>
           Everything you have logged, most recent first, grouped by day. Tap an
@@ -141,36 +142,35 @@ const privacy = [
           than a swipe, because a swipe is invisible to a screen reader and
           would leave some people with no way to discover it.
         </p>
-      </div>
-      <PhoneMockup label="The History screen: entries grouped under Today and Yesterday, each showing an emotion, an intensity out of ten, a time, and any skills used.">
-        <ScreenHistory />
-      </PhoneMockup>
-    </div>
+        <PhoneMockup label="The History screen: entries grouped under Today and Yesterday, each showing an emotion, an intensity out of ten, a time, and any skills used.">
+          <ScreenHistory />
+        </PhoneMockup>
+      </article>
 
-    <div class="wrap feature">
-      <div class="feature-text">
+      <article class="feature-card">
         <h3>Trends</h3>
         <p>
           Three views over the last 7 days, 30 days, or all time: mean
           intensity per day, your most frequent emotions, and average intensity
           for each one. The intensity axis is pinned to 0–10 rather than
-          auto-scaled, gaps are left as gaps rather than joined up, and every
-          chart has a plain-text equivalent beside it — not just a picture.
+          auto-scaled, and every chart has a plain-text equivalent beside it.
         </p>
-      </div>
-      <PhoneMockup label="The Trends screen: a seven-day bar chart of mean intensity on a fixed zero-to-ten scale, with a list of the most frequent emotions below it.">
-        <ScreenTrends />
-      </PhoneMockup>
+        <PhoneMockup label="The Trends screen: a seven-day bar chart of mean intensity on a fixed zero-to-ten scale, with a list of the most frequent emotions below it.">
+          <ScreenTrends />
+        </PhoneMockup>
+      </article>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="privacy">
-    <div class="wrap">
+  <section class="section section--band" aria-labelledby="privacy">
+    <div class="wrap section-head">
       <h2 id="privacy">Where your entries go</h2>
       <p class="section-lede">
         This is a mental-health-adjacent app, so it comes before anything else —
         including the parts that are not flattering.
       </p>
+    </div>
+    <div class="wrap wrap--wide">
       <dl class="privacy">
         {privacy.map((item) => (
           <div class="privacy-item">
@@ -187,7 +187,7 @@ const privacy = [
   </section>
 
   <section class="section" aria-labelledby="isnt">
-    <div class="wrap">
+    <div class="wrap closing">
       <h2 id="isnt">What it isn't</h2>
       <p>
         bpdtools gives no advice, no diagnosis, and no suggestions. It does not

@@ -28,12 +28,36 @@ const year = new Date().getFullYear();
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/" aria-label="bpdtools home">
+          <img src="/wordmark.png" width="520" height="77" alt="bpdtools" />
+        </a>
+        <nav class="nav" aria-label="Sections">
+          <a href="#what">What it does</a>
+          <a href="#privacy">Privacy</a>
+        </nav>
+      </div>
+    </header>
+
     <main id="main">
       <slot />
     </main>
+
     <footer class="site-footer">
-      <div class="wrap">
-        <p>&copy; {year} bpdtools</p>
+      <div class="wrap footer-grid">
+        <div class="footer-brand">
+          <img src="/wordmark.png" width="520" height="77" alt="bpdtools" />
+          <p>
+            A private, offline Android app for logging emotions as they happen.
+            A logging tool, not treatment.
+          </p>
+        </div>
+        <div class="footer-meta">
+          <a href="#privacy">Privacy</a>
+          <span>&copy; {year} bpdtools</span>
+        </div>
       </div>
     </footer>
   </body>
