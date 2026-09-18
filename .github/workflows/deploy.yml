@@ -18,9 +18,13 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# Pinned rather than ubuntu-latest, which migrates to Ubuntu 26 from
+# 19 October 2026. This is what ubuntu-latest resolves to today, so the
+# pin changes nothing now; it just makes the move to 26 a deliberate
+# commit rather than a build that changes underneath us.
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -40,7 +44,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
