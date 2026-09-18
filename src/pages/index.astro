@@ -130,8 +130,11 @@ const privacy = [
     </div>
 
     <div class="wrap features">
-      <article class="feature-card">
-        <h3>Log</h3>
+      <article class="feature-card reveal">
+        <h3 class="feature-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Log
+        </h3>
         <p>
           Pick an emotion, set an intensity from 0 to 10, add an optional note
           on what triggered it, tag any coping skills you used, and adjust the
@@ -144,8 +147,11 @@ const privacy = [
         />
       </article>
 
-      <article class="feature-card">
-        <h3>History</h3>
+      <article class="feature-card reveal">
+        <h3 class="feature-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          History
+        </h3>
         <p>
           Everything you have logged, most recent first, grouped by day. Tap an
           entry to edit it. Deleting offers an Undo — a visible button rather
@@ -158,8 +164,11 @@ const privacy = [
         />
       </article>
 
-      <article class="feature-card">
-        <h3>Trends</h3>
+      <article class="feature-card reveal">
+        <h3 class="feature-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+          Trends
+        </h3>
         <p>
           Three views over the last 7 days, 30 days, or all time: mean
           intensity per day, your most frequent emotions, and average intensity
@@ -185,7 +194,7 @@ const privacy = [
     <div class="wrap wrap--wide">
       <dl class="privacy">
         {privacy.map((item) => (
-          <div class="privacy-item">
+          <div class="privacy-item reveal">
             <dt>{item.h}</dt>
             <dd>{item.p}</dd>
           </div>
@@ -214,3 +223,22 @@ const privacy = [
     </div>
   </section>
 </Base>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          // Optional: stop observing once revealed
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+  );
+
+  document.querySelectorAll('.reveal').forEach((el) => {
+    observer.observe(el);
+  });
+</script>

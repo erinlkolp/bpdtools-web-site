@@ -28,23 +28,21 @@ function matchBrace(text, openIdx) {
   throw new Error(`unbalanced braces starting at index ${openIdx}`);
 }
 
-// Locate the dark-scheme media block first, so we know which :root block
-// (if any) sits inside it.
-const darkMediaIdx = css.indexOf('@media (prefers-color-scheme: dark)');
+// Locate the dark-scheme block.
+const darkMediaIdx = css.indexOf(':root.dark');
 if (darkMediaIdx === -1) {
   console.error('check-contrast FAILED: no dark-scheme block found');
   process.exit(1);
 }
 const darkMediaOpenBrace = css.indexOf('{', darkMediaIdx);
 if (darkMediaOpenBrace === -1) {
-  console.error('check-contrast FAILED: malformed dark-scheme media block');
+  console.error('check-contrast FAILED: malformed dark-scheme block');
   process.exit(1);
 }
 const darkMediaCloseBrace = matchBrace(css, darkMediaOpenBrace);
 
-// Find every `:root { ... }` block in the file and bucket each one as
-// "light" (outside the dark media block) or "dark" (inside it).
-const rootBlockRe = /:root\s*\{/g;
+// Find every `:root` or `:root.dark` block in the file.
+const rootBlockRe = /:root(?:\.dark)?\s*\{/g;
 let match;
 const lightBlocks = [];
 const darkBlocks = [];
@@ -52,7 +50,7 @@ while ((match = rootBlockRe.exec(css)) !== null) {
   const openBrace = css.indexOf('{', match.index);
   const closeBrace = matchBrace(css, openBrace);
   const body = css.slice(openBrace + 1, closeBrace);
-  if (match.index > darkMediaOpenBrace && match.index < darkMediaCloseBrace) {
+  if (match.index === darkMediaIdx) {
     darkBlocks.push(body);
   } else {
     lightBlocks.push(body);
@@ -65,7 +63,7 @@ if (lightBlocks.length === 0) {
 }
 if (darkBlocks.length === 0) {
   console.error(
-    'check-contrast FAILED: no :root block found inside the dark-scheme media query',
+    'check-contrast FAILED: no :root.dark block found',
   );
   process.exit(1);
 }
